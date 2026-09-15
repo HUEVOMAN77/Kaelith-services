@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">HCS</string>
+    <string name="title_dashboard">HCS Dashboard &amp; Self-Check</string>
+    <string name="subtitle_device_profile">Device &amp; EMUI Profile</string>
+    <string name="status_signature_spoofing">Signature Spoofing Status:</string>
+    <string name="status_hms_core">HMS Core Installed:</string>
+    <string name="status_push_agent">Push Agent Present:</string>
+    <string name="btn_open_battery">EMUI Battery Settings</string>
+    <string name="btn_open_autostart">EMUI Auto-Start Manager</string>
+    <string name="title_app_inspector">App Inspector &amp; Diagnostics</string>
+    <string name="btn_inspect_app">Inspect Installed App</string>
+    <string name="btn_export_log">Export Redacted Log</string>
+    <string name="title_privacy_panel">Privacy &amp; Transparency</string>
+    <string name="privacy_description">HCS never collects tokens, accounts, IMEIs, or personal logs. All exported diagnostics are redacted locally.</string>
+    <string name="msg_intent_failed">Unable to open target EMUI activity on this device.</string>
+    <string name="msg_log_exported">Sanitized log exported to: %1$s</string>
+</resources>
