@@ -2,7 +2,7 @@
 
 ## 1. Context & Objectives
 **HCS (Huawei Compatibility Services)** is an open-source, modular compatibility layer for Android devices running Huawei EMUI / HarmonyOS without Google Play Services (GMS).
-The main goal is to allow third-party applications to run seamlessly without requiring GBox/GSpace sandboxes, proprietary GMS blobs, or unauthorized system modifications.
+The main goal is to allow third-party applications (e.g. downloaded via Aurora Store) to run seamlessly without requiring GBox/GSpace sandboxes, proprietary GMS blobs, or unauthorized system modifications.
 
 ### Target Device Profile Reference
 - **Model**: Huawei nova 10 (`NCO-LX3`)
@@ -39,7 +39,7 @@ The main goal is to allow third-party applications to run seamlessly without req
 ```
 hcs-core
 ├── hcs-api-compat     # Compatible interfaces for common Android / GMS calls
-├── hcs-tasks          # Async tasks, callbacks, cancellation tokens
+├── hcs-tasks          # Async tasks, callbacks, cancellation tokens (com.google.android.gms.tasks API compat)
 ├── hcs-location       # Fused location provider (Android Location / HMS / Free provider)
 ├── hcs-push           # UnifiedPush priority + FCM-compatible fallback + Huawei Push Kit
 ├── hcs-auth           # Credential & auth wrappers without stored secrets
@@ -56,55 +56,27 @@ hcs-core
 └── hcs-test-suite     # Instrumented and unit test suite
 ```
 
-### Dependency Rules
-- `hcs-core` modules must remain modular with **zero circular dependencies**.
-- Higher-level modules (e.g. `hcs-companion`, `hcs-diagnostics`) depend on low-level abstractions (`hcs-api-compat`, `hcs-emui`).
-- All external dependencies are tracked via Version Catalog (`gradle/libs.versions.toml`) with strict dependency locking for reproducible builds.
-
 ---
 
-## 4. Phase 1 Implementation Scope
+## 4. Phase 2 Architecture & Implementation Details
 
-### 4.1 Device & EMUI Diagnostic (`hcs-emui` & `hcs-diagnostics`)
-- **`EmuiCompatibilityProfile`**: Detects hardware model, SoC, Android version, EMUI version, HMS Core / Push Agent installation status, and device region (without PII).
-- **EMUI Settings Launchers**: Safe intent callers to open EMUI-specific settings:
-  - Battery Optimization (`com.huawei.systemmanager`)
-  - App Auto-Start / Launch Manager (`com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity`)
-  - Protected Apps / Power Genie settings.
-  - Safe fallback to standard Android `Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS` if EMUI activities are absent or inaccessible.
+Phase 2 introduces the core runtime compatibility services required by third-party apps downloaded from Aurora Store to function without native Google Play Services:
 
-### 4.2 Signature Spoofing Verification
-- Classifies Signature Spoofing capability into 5 distinct states:
-  1. `SUPPORTED_AND_GRANTED`: Permitted and granted to HCS/GmsCore.
-  2. `SUPPORTED_BUT_NOT_GRANTED`: System supports `fake-signature` permission, but user/ROM hasn't granted it.
-  3. `UNSUPPORTED_BY_SYSTEM`: Android system/EMUI does not allow signature spoofing.
-  4. `HUAWEISPECIFIC_RESTRICTION`: EMUI active integrity checks prevent spoofing.
-  5. `UNKNOWN_ERROR`: Unable to query system permission state.
-- **Strict Rule**: Unprivileged APK will never fake or report a false positive state.
+### 4.1 `hcs-tasks` (Asynchronous Task Pipeline)
+- Provides a clean-room implementation of `Task<T>`, `TaskCompletionSource<T>`, `OnSuccessListener`, `OnFailureListener`, `OnCompleteListener`, `CancellationToken`, and `Tasks` utility methods.
+- Guarantees thread-safe execution and callback dispatching on thread pools or main UI threads.
 
-### 4.3 App Inspector (`HcsAppInspector`)
-Analyzes installed third-party APKs without decompiling or modifying them:
-- Scans `AndroidManifest.xml` via `PackageManager` for:
-  - Declared permissions, services, and receivers.
-  - GMS libraries (`com.google.android.gms`, Firebase, Maps, FIDO, Billing, SafetyNet, Play Integrity).
-  - HMS libraries (`com.huawei.hms`).
-- Evaluates estimated compatibility level (A, B, C, D, E).
-- Differentiates failure root causes:
-  - `API_NOT_IMPLEMENTED`
-  - `SIGNATURE_SPOOFING_MISSING`
-  - `RESTRICTED_BY_EMUI_BATTERY`
-  - `WEBVIEW_DEPENDENCY_MISSING`
-  - `NETWORK_FAIL`
+### 4.2 `hcs-location` (Fused Location Services)
+- `FusedLocationProviderClient`: Wraps standard Android `LocationManager` GPS / Network providers and integrates optional Huawei HMS Location Kit when available.
+- Features `LocationRequest`, `LocationResult`, `LocationCallback`, last known location retrieval, and background location updates.
+- Gives end-users full control over high-accuracy vs low-power location modes.
 
-### 4.4 Compatibility Level Matrix
-
-| Level | Meaning |
-|---|---|
-| **A** | Tested public API fully functional on the target device profile. |
-| **B** | Operates with documented non-critical limitations. |
-| **C** | Operates only under specific conditions or manual setup (e.g. manual battery exemption). |
-| **D** | Unimplementable without proprietary Google binaries, root, or custom ROM. |
-| **E** | Untested / Unknown. |
+### 4.3 `hcs-push` (Push Notifications Engine)
+- **Transport Priority**:
+  1. **UnifiedPush**: Standard open push protocol (e.g., via ntfy, Gotify, or embedded distributor).
+  2. **FCM-Compatible Adapter**: Catch-all receiver & dispatcher for apps expecting `com.google.android.c2dm.intent.RECEIVE` or `FirebaseMessagingService`.
+  3. **Huawei Push Kit**: Fallback adapter utilizing `com.huawei.android.pushagent` on EMUI devices.
+- **Privacy & User Control**: Users can inspect active push registrations and select preferred transports.
 
 ---
 
@@ -119,7 +91,7 @@ The following Google services are explicitly marked as **Unimplementable (`Level
 
 ---
 
-## 6. Schemas for Future Modules (Phase 1 Outline)
+## 6. Schemas for Future Modules
 
 ### 6.1 `hcs-compat-db` Schema Outline
 ```json
@@ -164,12 +136,3 @@ The following Google services are explicitly marked as **Unimplementable (`Level
   "required": ["version_code", "version_name", "download_url", "sha256_checksum", "signature_fingerprint_sha256"]
 }
 ```
-
----
-
-## 7. Verification & Acceptance Criteria (Phase 1)
-- Clean, reproducible Gradle build setup (`./gradlew assembleDebug`).
-- Complete `EmuiCompatibilityProfile` and `HcsAppInspector` unit tests.
-- Standalone `hcs-companion` APK signed with test key.
-- Safe, non-crashing EMUI settings launcher with fallbacks.
-- ES/EN bilingual self-check dashboard UI.

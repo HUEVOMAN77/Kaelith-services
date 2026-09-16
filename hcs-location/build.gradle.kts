@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 }
+
 android {
     namespace = "org.hcs.location"
     compileSdk = 34
@@ -12,4 +13,9 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
 }
-dependencies { implementation(libs.androidx.core.ktx) }
+
+dependencies {
+    implementation(project(":hcs-tasks"))
+    implementation(libs.androidx.core.ktx)
+    testImplementation(libs.junit)
+}
