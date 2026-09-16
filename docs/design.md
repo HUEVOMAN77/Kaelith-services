@@ -42,8 +42,8 @@ hcs-core
 ├── hcs-tasks          # Async tasks, callbacks, cancellation tokens (com.google.android.gms.tasks API compat)
 ├── hcs-location       # Fused location provider (Android Location / HMS / Free provider)
 ├── hcs-push           # UnifiedPush priority + FCM-compatible fallback + Huawei Push Kit
-├── hcs-auth           # Credential & auth wrappers without stored secrets
-├── hcs-maps           # Map provider interface (MapLibre / OSM / Mapbox / VTM)
+├── hcs-auth           # Credential & auth wrappers without stored secrets (OAuth2/OpenID)
+├── hcs-maps           # Map provider interface (MapLibre / OpenStreetMap / Mapbox / VTM)
 ├── hcs-webview        # System WebView detection & alternative check
 ├── hcs-fido           # Credential Manager & WebAuthn wrappers
 ├── hcs-diagnostics    # System inspection, signature spoofing check, redacted logging
@@ -58,25 +58,15 @@ hcs-core
 
 ---
 
-## 4. Phase 2 Architecture & Implementation Details
+## 4. Phase 3 & 4 Architecture & Implementation Details
 
-Phase 2 introduces the core runtime compatibility services required by third-party apps downloaded from Aurora Store to function without native Google Play Services:
+### 4.1 Phase 3: Auth & FIDO (`hcs-auth` & `hcs-fido`)
+- **`hcs-auth`**: Open standards-based authentication client (`HcsAuthClient`). Wraps OAuth2 / OpenID Connect authorization flows without storing user credentials or secrets locally on the device.
+- **`hcs-fido`**: Integrates Android `Credential Manager` and FIDO2 / WebAuthn options (`HcsFidoClient`). Facilitates passkey and biometric authentication for third-party apps without GMS FIDO dependencies.
 
-### 4.1 `hcs-tasks` (Asynchronous Task Pipeline)
-- Provides a clean-room implementation of `Task<T>`, `TaskCompletionSource<T>`, `OnSuccessListener`, `OnFailureListener`, `OnCompleteListener`, `CancellationToken`, and `Tasks` utility methods.
-- Guarantees thread-safe execution and callback dispatching on thread pools or main UI threads.
-
-### 4.2 `hcs-location` (Fused Location Services)
-- `FusedLocationProviderClient`: Wraps standard Android `LocationManager` GPS / Network providers and integrates optional Huawei HMS Location Kit when available.
-- Features `LocationRequest`, `LocationResult`, `LocationCallback`, last known location retrieval, and background location updates.
-- Gives end-users full control over high-accuracy vs low-power location modes.
-
-### 4.3 `hcs-push` (Push Notifications Engine)
-- **Transport Priority**:
-  1. **UnifiedPush**: Standard open push protocol (e.g., via ntfy, Gotify, or embedded distributor).
-  2. **FCM-Compatible Adapter**: Catch-all receiver & dispatcher for apps expecting `com.google.android.c2dm.intent.RECEIVE` or `FirebaseMessagingService`.
-  3. **Huawei Push Kit**: Fallback adapter utilizing `com.huawei.android.pushagent` on EMUI devices.
-- **Privacy & User Control**: Users can inspect active push registrations and select preferred transports.
+### 4.2 Phase 4: Maps & WebView (`hcs-maps` & `hcs-webview`)
+- **`hcs-maps`**: Modular map rendering provider abstraction (`HcsMapProvider`). Allows end-users and apps to switch between free open-source map backends (**MapLibre**, **OpenStreetMap**, **Mapbox**, or **VTM**) without relying on proprietary Google Maps v2 SDKs.
+- **`hcs-webview`**: System WebView inspector (`HcsWebViewInspector`). Evaluates installed WebView package versions, multi-process capability, and Chromium engine rendering features on EMUI.
 
 ---
 

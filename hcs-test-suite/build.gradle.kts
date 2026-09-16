@@ -20,6 +20,10 @@ dependencies {
     implementation(project(":hcs-tasks"))
     implementation(project(":hcs-location"))
     implementation(project(":hcs-push"))
+    implementation(project(":hcs-auth"))
+    implementation(project(":hcs-fido"))
+    implementation(project(":hcs-maps"))
+    implementation(project(":hcs-webview"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.junit)
 }

@@ -1,15 +1,21 @@
 package org.hcs.testsuite
 
+import org.hcs.auth.HcsAuthClient
 import org.hcs.diagnostics.AppInspectionResult
 import org.hcs.diagnostics.CompatibilityLevel
 import org.hcs.diagnostics.FailureRootCause
 import org.hcs.diagnostics.RedactedLogExporter
+import org.hcs.fido.HcsFidoClient
+import org.hcs.fido.WebAuthnOption
 import org.hcs.location.HcsLocation
 import org.hcs.location.HcsLocationResult
+import org.hcs.maps.MapEngineType
+import org.hcs.maps.MapManager
 import org.hcs.push.PushEngineManager
 import org.hcs.push.PushTransportType
 import org.hcs.tasks.TaskCompletionSource
 import org.hcs.tasks.Tasks
+import org.hcs.webview.WebViewStatus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -79,6 +85,37 @@ class HcsTestSuite {
 
         assertEquals(PushTransportType.UNIFIED_PUSH, transportType)
         assertTrue(token.contains("com.aurorastore.targetapp"))
+    }
+
+    @Test
+    fun testAuthAndFidoIntegration() {
+        val authClient = HcsAuthClient(DummyContext())
+        val mockCallback = "https://hcs.local/callback?code=VALID_CODE&email=user@hcs.local"
+        val authResult = Tasks.await(authClient.handleAuthorizationUrl(mockCallback), 1, TimeUnit.SECONDS)
+
+        assertTrue(authResult.isAuthenticated)
+        assertEquals("user@hcs.local", authResult.accountEmail)
+
+        val fidoClient = HcsFidoClient(DummyContext())
+        val fidoResult = Tasks.await(fidoClient.createPasskey(WebAuthnOption("hcs.local", "CHALLENGE_1")), 1, TimeUnit.SECONDS)
+        assertTrue(fidoResult.isSuccess)
+    }
+
+    @Test
+    fun testMapsAndWebViewIntegration() {
+        val mapManager = MapManager()
+        val osmProvider = mapManager.getProvider(MapEngineType.OPEN_STREET_MAP)
+        val tileUrl = osmProvider.renderMapTile(12.0, 34.0, 15f)
+
+        assertTrue(tileUrl.contains("tile.openstreetmap.org"))
+
+        val webViewStatus = WebViewStatus(
+            packageName = "com.huawei.webview",
+            versionName = "12.0.0.300",
+            isMultiProcessEnabled = true,
+            isSufficientForHcs = true
+        )
+        assertTrue(webViewStatus.isSufficientForHcs)
     }
 }
 
