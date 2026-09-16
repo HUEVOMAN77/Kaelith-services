@@ -64,6 +64,7 @@ dependencies {
     implementation(project(":hcs-remoteconfig"))
     implementation(project(":hcs-gemini"))
     implementation(project(":hcs-gms-services"))
+    implementation(project(":hcs-game-services"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

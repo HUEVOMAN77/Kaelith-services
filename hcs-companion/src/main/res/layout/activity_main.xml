@@ -154,7 +154,14 @@
                     android:id="@+id/btnOpenGemini"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Abrir Gemini AI Chat" />
+                    android:text="Abrir Gemini AI Chat"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnTestGameServices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Probar HCS Game Services" />
 
             </LinearLayout>
 

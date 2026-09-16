@@ -248,6 +248,15 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.btnTestGameServices.setOnClickListener {
+            val gameClient = com.hcs.games.HcsGameServicesClient(this)
+            gameClient.unlockAchievement("ach_first_game", "Primer Juego Local")
+            gameClient.saveGameSnapshot("Partida 1 - Nivel 5", "score=5000;level=5")
+            val snapshotsTask = gameClient.getSavedGameSnapshots()
+            val list = Tasks.await(snapshotsTask, 1, TimeUnit.SECONDS)
+            Toast.makeText(this, "HCS Game Services: ${list.size} partidas guardadas localmente.", Toast.LENGTH_LONG).show()
+        }
+
         binding.btnExportLog.setOnClickListener {
             val rawDiagnosticData = """
                 HCS Self-Check Export
