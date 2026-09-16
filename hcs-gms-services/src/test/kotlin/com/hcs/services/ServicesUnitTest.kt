@@ -1,7 +1,6 @@
 package com.hcs.services
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class ServicesUnitTest {
@@ -13,11 +12,11 @@ class ServicesUnitTest {
 
     @Test
     fun testPushBinderDescriptors() {
-        assertEquals("com.google.android.c2dm.intent.REGISTER", PushBinder.DESCRIPTOR)
+        assertEquals("com.google.android.gms.gcm.INetworkTaskCallback", PushBinder.DESCRIPTOR)
     }
 
     @Test
     fun testAuthBinderDescriptors() {
-        assertEquals("com.google.android.gms.auth.service.START", AuthBinder.DESCRIPTOR)
+        assertEquals("com.google.android.gms.auth.firstparty.dataservice.IGoogleAuthService", AuthBinder.DESCRIPTOR)
     }
 }

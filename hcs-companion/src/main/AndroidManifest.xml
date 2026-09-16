@@ -20,6 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".GeminiChatActivity"
+            android:exported="false"
+            android:label="HCS Gemini Chat" />
     </application>
 
 </manifest>

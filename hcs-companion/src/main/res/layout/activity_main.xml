@@ -147,7 +147,14 @@
                     android:id="@+id/btnExportOfflineProfile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/btn_export_offline_profile" />
+                    android:text="@string/btn_export_offline_profile"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnOpenGemini"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Abrir Gemini AI Chat" />
 
             </LinearLayout>
 

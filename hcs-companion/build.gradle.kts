@@ -62,6 +62,8 @@ dependencies {
     implementation(project(":hcs-offline-profiles"))
     implementation(project(":hcs-scan"))
     implementation(project(":hcs-remoteconfig"))
+    implementation(project(":hcs-gemini"))
+    implementation(project(":hcs-gms-services"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

@@ -243,6 +243,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.btnOpenGemini.setOnClickListener {
+            val intent = android.content.Intent(this, GeminiChatActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnExportLog.setOnClickListener {
             val rawDiagnosticData = """
                 HCS Self-Check Export
