@@ -1,7 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F8FAFC"
     android:padding="16dp">
 
     <LinearLayout
@@ -9,22 +11,54 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvTitle"
+        <!-- App Header Card -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/title_dashboard"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="#2563EB">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HCS Services Suite"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Huawei Compatibility Services · EMUI 13.0"
+                    android:textColor="#93C5FD"
+                    android:textSize="13sp"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Device & System Profile Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -35,17 +69,20 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/subtitle_device_profile"
-                    android:textSize="18sp"
+                    android:text="Perfil de Dispositivo"
+                    android:textColor="#0F172A"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="10dp" />
 
                 <TextView
                     android:id="@+id/tvDeviceInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Manufacturer: ...\nModel: ...\nEMUI: ..."
-                    android:textSize="14sp"
+                    android:textColor="#334155"
+                    android:textSize="13sp"
+                    android:lineSpacingExtra="3dp"
                     android:layout_marginBottom="8dp" />
 
                 <TextView
@@ -53,7 +90,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Signature Spoofing: CHECKING..."
-                    android:textSize="14sp"
+                    android:textColor="#2563EB"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="4dp" />
 
@@ -62,7 +100,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Active Push: UnifiedPush (Priority)"
-                    android:textSize="14sp"
+                    android:textColor="#059669"
+                    android:textSize="13sp"
                     android:layout_marginBottom="4dp" />
 
                 <TextView
@@ -70,19 +109,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Map Engine: OpenStreetMap / MapLibre"
-                    android:textSize="14sp" />
+                    android:textColor="#475569"
+                    android:textSize="13sp" />
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- EMUI Management Shortcuts -->
+        <!-- EMUI Management Shortcuts Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,8 +133,18 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ajustes de EMUI &amp; Batería"
+                    android:textColor="#0F172A"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp" />
+
                 <Button
                     android:id="@+id/btnBatterySettings"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_open_battery"
@@ -99,6 +152,7 @@
 
                 <Button
                     android:id="@+id/btnAutoStart"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_open_autostart" />
@@ -112,8 +166,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -124,31 +181,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title_advanced_tools"
-                    android:textSize="18sp"
+                    android:text="Herramientas e IA Avanzadas"
+                    android:textColor="#0F172A"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnRunBenchmark"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/btn_run_benchmark"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnManageDistributors"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/btn_manage_distributors"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnExportOfflineProfile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/btn_export_offline_profile"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="12dp" />
 
                 <Button
                     android:id="@+id/btnOpenGemini"
@@ -158,36 +195,66 @@
                     android:layout_marginBottom="8dp" />
 
                 <Button
-                    android:id="@+id/btnTestGameServices"
+                    android:id="@+id/btnTestOpenAi"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Probar HCS Game Services"
+                    android:text="Probar ChatGPT (GPT-4o Nativo)"
                     android:layout_marginBottom="8dp" />
 
                 <Button
                     android:id="@+id/btnTestNavigation"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Probar Navegación GPS Turn-by-Turn"
                     android:layout_marginBottom="8dp" />
 
                 <Button
-                    android:id="@+id/btnTestOpenAi"
+                    android:id="@+id/btnTestGameServices"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Probar ChatGPT (GPT-4o Nativo)" />
+                    android:text="Probar HCS Game Services"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnRunBenchmark"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_run_benchmark"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnManageDistributors"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_manage_distributors"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnExportOfflineProfile"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_export_offline_profile" />
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- App Inspector & Community DB Card -->
+        <!-- App Inspector Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -199,43 +266,50 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/title_app_inspector"
-                    android:textSize="18sp"
+                    android:textColor="#0F172A"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="12dp" />
 
                 <EditText
                     android:id="@+id/etPackageName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="e.g. com.google.android.youtube"
+                    android:hint="e.g. com.google.android.gm"
+                    android:padding="12dp"
+                    android:background="@drawable/ic_launcher_background"
                     android:inputType="textUri"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="12dp" />
 
                 <Button
                     android:id="@+id/btnInspect"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_inspect_app"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="12dp" />
 
                 <TextView
                     android:id="@+id/tvInspectionResult"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Enter package name to inspect..."
+                    android:text="Ingresa un nombre de paquete para inspeccionar..."
+                    android:textColor="#475569"
                     android:textSize="13sp" />
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Updater, Shizuku, GMS Bridge & Privileged Module Card -->
+        <!-- Updater, Bridge & Privileged Module Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -243,61 +317,33 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_update_system"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
                 <Button
                     android:id="@+id/btnCheckUpdates"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_check_updates"
-                    android:layout_marginBottom="12dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_gms_bridge"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
                 <Button
                     android:id="@+id/btnToggleGmsBridge"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_toggle_gms_bridge"
-                    android:layout_marginBottom="12dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_shizuku_module"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
                 <Button
                     android:id="@+id/btnCheckShizuku"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_check_shizuku"
-                    android:layout_marginBottom="12dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_privileged_module"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
                 <Button
                     android:id="@+id/btnSimulatePatch"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_simulate_patch" />
@@ -310,9 +356,12 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -324,7 +373,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/title_privacy_panel"
-                    android:textSize="18sp"
+                    android:textColor="#0F172A"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
@@ -332,11 +382,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_description"
+                    android:textColor="#475569"
                     android:textSize="13sp"
                     android:layout_marginBottom="12dp" />
 
                 <Button
                     android:id="@+id/btnExportLog"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_export_log" />

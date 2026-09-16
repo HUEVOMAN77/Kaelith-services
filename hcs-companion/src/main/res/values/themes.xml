@@ -1,5 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
     <style name="Base.Theme.HCS" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand colors -->
+        <item name="colorPrimary">#2563EB</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#DBEAFE</item>
+        <item name="colorOnPrimaryContainer">#1E40AF</item>
+
+        <!-- Secondary brand colors -->
+        <item name="colorSecondary">#059669</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+
+        <!-- Background & Surface -->
+        <item name="android:colorBackground">#F8FAFC</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#0F172A</item>
+        <item name="colorSurfaceVariant">#F1F5F9</item>
+        <item name="colorOnSurfaceVariant">#475569</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">#F8FAFC</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.HCS" parent="Base.Theme.HCS" />
