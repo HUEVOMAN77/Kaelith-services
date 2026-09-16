@@ -1,6 +1,8 @@
 package org.hcs.testsuite
 
 import org.hcs.auth.HcsAuthClient
+import org.hcs.compatdb.CommunityReport
+import org.hcs.compatdb.HcsCompatDbClient
 import org.hcs.diagnostics.AppInspectionResult
 import org.hcs.diagnostics.CompatibilityLevel
 import org.hcs.diagnostics.FailureRootCause
@@ -11,16 +13,20 @@ import org.hcs.location.HcsLocation
 import org.hcs.location.HcsLocationResult
 import org.hcs.maps.MapEngineType
 import org.hcs.maps.MapManager
+import org.hcs.privileged.PrivilegedPatcher
 import org.hcs.push.PushEngineManager
 import org.hcs.push.PushTransportType
 import org.hcs.tasks.TaskCompletionSource
 import org.hcs.tasks.Tasks
+import org.hcs.telemetry.HcsCrashReporter
+import org.hcs.update.HcsUpdateManager
 import org.hcs.webview.WebViewStatus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class HcsTestSuite {
@@ -117,6 +123,52 @@ class HcsTestSuite {
         )
         assertTrue(webViewStatus.isSufficientForHcs)
     }
+
+    @Test
+    fun testCompatDbUpdateAndTelemetryIntegration() {
+        val compatDb = HcsCompatDbClient()
+        val submitTask = compatDb.submitAnonymousReport(
+            CommunityReport(
+                packageName = "org.hcs.fulltest",
+                appVersionCode = 1,
+                appVersionName = "1.0",
+                deviceModel = "NCO-LX3",
+                emuiVersion = "13.0",
+                androidSdk = 31,
+                compatibilityLevel = "A",
+                failingApis = emptyList(),
+                summaryNotes = "Integration test OK"
+            )
+        )
+        assertTrue(Tasks.await(submitTask, 1, TimeUnit.SECONDS))
+
+        val updateManager = HcsUpdateManager()
+        val updateTask = updateManager.checkForUpdates(1)
+        val update = Tasks.await(updateTask, 1, TimeUnit.SECONDS)
+        assertNotNull(update)
+        assertTrue(updateManager.verifyUpdateSignature(update!!))
+
+        val crashReporter = HcsCrashReporter(DummyContext())
+        crashReporter.setOptInStatus(true)
+        val reportTask = crashReporter.reportCrash(RuntimeException("HCS Test Crash"), "13.0", "1.0")
+        assertTrue(Tasks.await(reportTask, 1, TimeUnit.SECONDS))
+    }
+
+    @Test
+    fun testPrivilegedPatcherSimulationIntegration() {
+        val patcher = PrivilegedPatcher(DummyContext())
+        val patchTask = patcher.applySystemPatch("/tmp/hcs_patch.conf", "TEST_PATCH", isSimulation = true)
+        val result = Tasks.await(patchTask, 1, TimeUnit.SECONDS)
+
+        assertTrue(result.isSuccess)
+        assertTrue(result.isSimulation)
+    }
 }
 
-private class DummyContext : android.content.ContextWrapper(null)
+private class DummyContext : android.content.ContextWrapper(null) {
+    override fun getFilesDir(): File {
+        val f = File(System.getProperty("java.io.tmpdir"), "hcs_test_suite_tmp")
+        if (!f.exists()) f.mkdirs()
+        return f
+    }
+}

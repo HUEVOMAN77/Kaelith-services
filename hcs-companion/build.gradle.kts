@@ -45,6 +45,13 @@ dependencies {
     implementation(project(":hcs-emui"))
     implementation(project(":hcs-diagnostics"))
     implementation(project(":hcs-api-compat"))
+    implementation(project(":hcs-tasks"))
+    implementation(project(":hcs-push"))
+    implementation(project(":hcs-maps"))
+    implementation(project(":hcs-compat-db"))
+    implementation(project(":hcs-update"))
+    implementation(project(":hcs-telemetry"))
+    implementation(project(":hcs-privileged"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

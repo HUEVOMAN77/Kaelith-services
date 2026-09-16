@@ -34,7 +34,7 @@ The main goal is to allow third-party applications (e.g. downloaded via Aurora S
 
 ---
 
-## 3. Module Hierarchy & Architecture
+## 3. Complete Module Hierarchy & Architecture
 
 ```
 hcs-core
@@ -47,26 +47,47 @@ hcs-core
 ├── hcs-webview        # System WebView detection & alternative check
 ├── hcs-fido           # Credential Manager & WebAuthn wrappers
 ├── hcs-diagnostics    # System inspection, signature spoofing check, redacted logging
-├── hcs-compat-db      # Community compatibility database client (schema & client interface)
-├── hcs-update         # Self-updater (F-Droid style with signature validation)
-├── hcs-telemetry      # Opt-in ACRA-style crash reporter (no Google services)
+├── hcs-compat-db      # Community compatibility database client (anonymous read/report)
+├── hcs-update         # Self-updater (F-Droid style with SHA-256 & signature validation)
+├── hcs-telemetry      # Opt-in ACRA-style crash reporter without Google services
 ├── hcs-emui           # Non-privileged EMUI adapters (battery, autostart, launch manager)
-├── hcs-privileged     # Optional root/ROM rollback & system patch manager
+├── hcs-privileged     # Optional root/ROM patch manager with backup, dry-run & 1-click rollback
 ├── hcs-companion      # Companion GUI application & self-check UI dashboard
-└── hcs-test-suite     # Instrumented and unit test suite
+└── hcs-test-suite     # Comprehensive instrumented and unit test suite
 ```
 
 ---
 
-## 4. Phase 3 & 4 Architecture & Implementation Details
+## 4. Full Phase Architecture & Implementation Details
 
-### 4.1 Phase 3: Auth & FIDO (`hcs-auth` & `hcs-fido`)
-- **`hcs-auth`**: Open standards-based authentication client (`HcsAuthClient`). Wraps OAuth2 / OpenID Connect authorization flows without storing user credentials or secrets locally on the device.
-- **`hcs-fido`**: Integrates Android `Credential Manager` and FIDO2 / WebAuthn options (`HcsFidoClient`). Facilitates passkey and biometric authentication for third-party apps without GMS FIDO dependencies.
+### 4.1 Phase 1 & 2: Diagnostics, Tasks, Location & Push
+- **`hcs-emui` & `hcs-diagnostics`**: Device profiling, EMUI battery/autostart launchers, signature spoofing status check, and PII-redacted logging.
+- **`hcs-tasks`**: Clean-room implementation of `Task<T>`, `TaskCompletionSource<T>`, and `Tasks.await`.
+- **`hcs-location`**: `FusedLocationProviderClient` wrapping GPS/Network and HMS Location Kit.
+- **`hcs-push`**: Multi-transport push notification engine with **UnifiedPush** priority, FCM-compat adapter, and Huawei Push Kit fallback.
 
-### 4.2 Phase 4: Maps & WebView (`hcs-maps` & `hcs-webview`)
-- **`hcs-maps`**: Modular map rendering provider abstraction (`HcsMapProvider`). Allows end-users and apps to switch between free open-source map backends (**MapLibre**, **OpenStreetMap**, **Mapbox**, or **VTM**) without relying on proprietary Google Maps v2 SDKs.
-- **`hcs-webview`**: System WebView inspector (`HcsWebViewInspector`). Evaluates installed WebView package versions, multi-process capability, and Chromium engine rendering features on EMUI.
+### 4.2 Phase 3 & 4: Auth, FIDO, Maps & WebView
+- **`hcs-auth`**: Stateless OAuth2 / OpenID Connect authorization flows.
+- **`hcs-fido`**: FIDO2 / WebAuthn passkey management via Android Credential Manager.
+- **`hcs-maps`**: Abstracted `HcsMapProvider` supporting MapLibre, OpenStreetMap, Mapbox, and VTM.
+- **`hcs-webview`**: System WebView rendering engine inspector.
+
+### 4.3 Phase 5: Community DB, Updater & Telemetry (`hcs-compat-db`, `hcs-update`, `hcs-telemetry`)
+- **`hcs-compat-db`**: Anonymous querying and opt-in submission of app compatibility reports.
+- **`hcs-update`**: Cryptographically signed update index parser (`HcsUpdateManager`) verifying SHA-256 checksums and certificate fingerprints.
+- **`hcs-telemetry`**: Opt-in crash reporter (`HcsCrashReporter`) capturing anonymized stack traces without Google services.
+
+### 4.4 Phase 6: Privileged Module (`hcs-privileged`)
+- **`hcs-privileged`**: `PrivilegedPatcher` providing safe system/root patch management with:
+  - Pre-patch SHA-256 hash verification.
+  - Full backup creation prior to any file modification.
+  - Dry-run / simulation mode.
+  - 1-click clean rollback and restoration.
+  - Bootloop protection guard.
+
+### 4.5 Phase 7: Companion GUI & Governance (`hcs-companion`, `CONTRIBUTING.md`, `SECURITY.md`)
+- Complete unified dashboard UI featuring push status, map provider selection, app inspector with community DB lookup, update manager, privileged controls, and privacy panels.
+- Comprehensive governance guidelines (`CONTRIBUTING.md` & `SECURITY.md`).
 
 ---
 
@@ -78,51 +99,3 @@ The following Google services are explicitly marked as **Unimplementable (`Level
 3. **Google Wallet / Google Pay**: Requires proprietary Knox/TEE/SE secure element credentials and Google tokenization servers.
 4. **Widevine L1 DRM (Custom Keys)**: Fallback to Widevine L3 if supported by hardware; proprietary DRM keys cannot be forged.
 5. **Google Account Authentication via Proprietary Play Services**: Wrapped using standard OAuth2/OpenID where available, but proprietary GMS auth tokens cannot be synthesized.
-
----
-
-## 6. Schemas for Future Modules
-
-### 6.1 `hcs-compat-db` Schema Outline
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "HcsCompatibilityReport",
-  "type": "object",
-  "properties": {
-    "package_name": { "type": "string" },
-    "app_version_code": { "type": "integer" },
-    "app_version_name": { "type": "string" },
-    "device_model": { "type": "string" },
-    "emui_version": { "type": "string" },
-    "android_sdk": { "type": "integer" },
-    "compatibility_level": { "type": "string", "enum": ["A", "B", "C", "D", "E"] },
-    "failing_apis": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "notes": { "type": "string" },
-    "timestamp": { "type": "integer" }
-  },
-  "required": ["package_name", "compatibility_level", "device_model", "android_sdk"]
-}
-```
-
-### 6.2 `hcs-update` Schema Outline
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "HcsUpdateIndex",
-  "type": "object",
-  "properties": {
-    "version_code": { "type": "integer" },
-    "version_name": { "type": "string" },
-    "download_url": { "type": "string" },
-    "sha256_checksum": { "type": "string" },
-    "min_sdk": { "type": "integer" },
-    "release_notes": { "type": "string" },
-    "signature_fingerprint_sha256": { "type": "string" }
-  },
-  "required": ["version_code", "version_name", "download_url", "sha256_checksum", "signature_fingerprint_sha256"]
-}
-```
