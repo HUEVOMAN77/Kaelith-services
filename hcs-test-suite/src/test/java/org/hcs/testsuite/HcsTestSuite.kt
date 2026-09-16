@@ -9,6 +9,8 @@ import org.hcs.diagnostics.FailureRootCause
 import org.hcs.diagnostics.RedactedLogExporter
 import org.hcs.fido.HcsFidoClient
 import org.hcs.fido.WebAuthnOption
+import org.hcs.gmsbridge.GmsServiceRouter
+import org.hcs.gmsbridge.MicroGConflictChecker
 import org.hcs.location.HcsLocation
 import org.hcs.location.HcsLocationResult
 import org.hcs.maps.MapEngineType
@@ -178,6 +180,20 @@ class HcsTestSuite {
         val task = commands.getBatteryOptimizationDetail("com.aurorastore.targetapp")
         val result = Tasks.await(task, 1, TimeUnit.SECONDS)
         assertNotNull(result)
+    }
+
+    @Test
+    fun testGmsBridgeIntegration() {
+        val mockChecker = object : MicroGConflictChecker(DummyContext()) {
+            override fun checkMicroGInstalled(): Boolean = false
+        }
+        val router = GmsServiceRouter(DummyContext(), mockChecker)
+        val enableTask = router.enableBridge(hasSignatureSpoofing = true)
+        val enabled = Tasks.await(enableTask, 1, TimeUnit.SECONDS)
+
+        assertTrue(enabled)
+        val routeResult = router.routeGmsServiceQuery("com.google.android.gms.location.LOCATION_SERVICE")
+        assertEquals("ROUTED_TO_HCS_LOCATION", routeResult)
     }
 }
 

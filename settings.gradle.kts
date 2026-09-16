@@ -10,7 +10,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = java.net.URI("https://jitpack.io") }
     }
 }
 
@@ -31,6 +30,7 @@ include(":hcs-update")
 include(":hcs-telemetry")
 include(":hcs-emui")
 include(":hcs-privileged")
+include(":hcs-privileged:hcs-gms-bridge")
 include(":hcs-shizuku")
 include(":hcs-proxy")
 include(":hcs-benchmark")

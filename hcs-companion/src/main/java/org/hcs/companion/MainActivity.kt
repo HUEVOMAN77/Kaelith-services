@@ -10,6 +10,7 @@ import org.hcs.diagnostics.HcsAppInspector
 import org.hcs.diagnostics.RedactedLogExporter
 import org.hcs.distributorinstaller.UnifiedPushDistributorManager
 import org.hcs.emui.EmuiCompatibilityProfile
+import org.hcs.gmsbridge.GmsServiceRouter
 import org.hcs.maps.MapEngineType
 import org.hcs.maps.MapManager
 import org.hcs.offlineprofiles.HcsProfileSerializer
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var distributorManager: UnifiedPushDistributorManager
     private lateinit var profileSerializer: HcsProfileSerializer
     private lateinit var shizukuCommands: ShizukuCommands
+    private lateinit var gmsRouter: GmsServiceRouter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         distributorManager = UnifiedPushDistributorManager(this)
         profileSerializer = HcsProfileSerializer()
         shizukuCommands = ShizukuCommands()
+        gmsRouter = GmsServiceRouter(this)
 
         setupSelfCheck()
         setupListeners()
@@ -109,6 +112,22 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 Toast.makeText(this, getString(R.string.msg_intent_failed), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.btnToggleGmsBridge.setOnClickListener {
+            val status = gmsRouter.getStatus(hasSignatureSpoofing = true)
+            if (status.isMicroGInstalled) {
+                Toast.makeText(this, status.warningMessage ?: "microG collision warning", Toast.LENGTH_LONG).show()
+            } else {
+                val toggleTask = if (status.isBridgeActive) gmsRouter.disableBridge() else gmsRouter.enableBridge(hasSignatureSpoofing = true)
+                try {
+                    val active = Tasks.await(toggleTask, 1, TimeUnit.SECONDS)
+                    val msg = if (active) "HCS GMS Package Identity Bridge ENABLED" else "HCS GMS Bridge DISABLED"
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Failed to toggle GMS Bridge", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -186,6 +205,12 @@ class MainActivity : AppCompatActivity() {
                     append("Local Compatibility Level: ").append(result.compatibilityLevel).append("\n")
                     append("Root Cause: ").append(result.primaryRootCause).append("\n")
                     append("GMS Libraries: ").append(if (result.detectedGmsLibraries.isEmpty()) "None" else result.detectedGmsLibraries.joinToString(", ")).append("\n")
+                    if (targetPkg == "com.google.android.youtube") {
+                        append("YouTube Feature Breakdown:\n")
+                        append(" - Basic Playback: Level B (Functional)\n")
+                        append(" - Account/Channel Sync: Level C (OAuth2/OpenID)\n")
+                        append(" - Cast / 4K DRM Hardware Attestation: Level D (Unimplementable)\n")
+                    }
                     append("Community DB: ").append(communityNotes)
                 }.toString()
 

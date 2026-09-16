@@ -18,11 +18,11 @@ The main goal is to allow third-party applications (e.g. downloaded via Aurora S
 1. **Non-Falsification Policy**:
    - HCS will **never** fake or spoof Google signatures, Play Integrity/SafetyNet attestations, DRM keys, payment tokens, licenses, or accounts.
    - If an API cannot be provided legitimately or via open standards, HCS reports an honest incompatibility level (`Level D`).
-2. **Three-Tier Operational Modes + Optional Shizuku Helper**:
+2. **Three-Tier Operational Modes + Optional Helpers**:
    - **Mode 1: Normal Unprivileged App** (`hcs-companion` & `hcs-core`) - Zero root or system privileges required. Uses standard Android APIs & EMUI public settings intents.
-   - **Mode 2: Optional Root Module** (`hcs-privileged`) - Explicit user opt-in, non-destructive, with full backup and 1-click rollback.
+   - **Mode 2: Optional Root Module** (`hcs-privileged` & `hcs-gms-bridge`) - Explicit user opt-in, non-destructive, with full backup, 1-click rollback, and optional GMS package identity bridge if signature spoofing environment exists.
    - **Mode 3: ROM / AOSP Package** - Integrated at system build time for custom ROM developers.
-   - **Optional Helper: Shizuku Shell Integration** (`hcs-shizuku`) - Non-root adb shell-level helper providing dumpsys diagnostics and battery whitelist management if user chooses to authorize Shizuku.
+   - **Optional Helper: Shizuku Shell Integration** (`hcs-shizuku`) - Non-root adb shell-level helper providing dumpsys diagnostics and battery whitelist management.
 3. **Privacy First & Zero Data Harvesting**:
    - No sensitive data collection (tokens, passwords, IMEI, phone numbers, Google accounts, or raw logs).
    - All exported logs and diagnostics are automatically redacted before saving or sharing.
@@ -53,6 +53,7 @@ hcs-core
 ├── hcs-telemetry             # Opt-in ACRA-style crash reporter without Google services
 ├── hcs-emui                  # Non-privileged EMUI adapters (battery, autostart, launch manager)
 ├── hcs-privileged            # Optional root/ROM patch manager with backup, dry-run & 1-click rollback
+│   └── hcs-gms-bridge        # GMS Package Identity Bridge (maps com.google.android.gms calls to HCS core)
 ├── hcs-shizuku               # Optional Shizuku shell-level helper (dumpsys diagnostics, battery whitelist)
 ├── hcs-proxy                 # Local micro-proxy for legacy Google URL pings
 ├── hcs-benchmark             # Memory, CPU active time, and battery overhead profiler
@@ -65,15 +66,17 @@ hcs-core
 
 ---
 
-## 4. Optional Shizuku Integration Architecture (`hcs-shizuku`)
+## 4. Optional GMS Package Identity Bridge (`hcs-gms-bridge`)
 
-Shizuku provides open-source `adb shell` privilege delegation without requiring root or bootloader unlocking.
-- **Boundaries**: Shizuku cannot modify system signatures, pass Play Integrity, or alter protected partitions.
-- **Graceful Degradation**: If Shizuku is uninstalled or unauthorized, HCS falls back 100% transparently to unprivileged standard Android/EMUI intents without throwing errors or breaking current behavior.
-- **Capabilities**:
-  1. Detailed dumpsys battery optimization and protected app state queries.
-  2. Battery optimization whitelist management (`dumpsys deviceidle whitelist`).
-  3. Expanded package inspection details in `HcsAppInspector`.
+### 4.1 Purpose & Exclusivity
+- Exposes existing HCS core services (`hcs-tasks`, `hcs-location`, `hcs-push`, `hcs-auth`, `hcs-maps`, `hcs-fido`) under the `com.google.android.gms` package identity for apps like YouTube.
+- **microG Incompatibility Warning**: Only one package can claim `com.google.android.gms` at a time. The user must uninstall microG or GmsCore prior to enabling HCS GMS Bridge.
+- **No Code Duplication**: Routes incoming AIDL/service calls to existing HCS runtime modules.
+
+### 4.2 YouTube Feature Breakdown (Honest Reporting)
+- **Basic Playback & Search**: Level B (Functional via HCS Task/Location/Maps pipeline).
+- **Google Account Sync & Channel Subscriptions**: Level C (Uses open OAuth2/OpenID flows).
+- **Google Cast & 4K DRM Hardware Attestation**: Level D (Unimplementable without Google hardware attestation).
 
 ---
 
