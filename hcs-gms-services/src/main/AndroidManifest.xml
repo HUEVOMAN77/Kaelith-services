@@ -27,5 +27,14 @@
                 <action android:name="com.hcs.services.AUTH" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".HcsGameGmsService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.games.service.START" />
+                <action android:name="com.hcs.services.GAMES" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

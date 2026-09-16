@@ -161,7 +161,21 @@
                     android:id="@+id/btnTestGameServices"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Probar HCS Game Services" />
+                    android:text="Probar HCS Game Services"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnTestNavigation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Probar Navegación GPS Turn-by-Turn"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnTestOpenAi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Probar ChatGPT (GPT-4o Nativo)" />
 
             </LinearLayout>
 

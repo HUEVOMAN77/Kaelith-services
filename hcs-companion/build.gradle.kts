@@ -65,6 +65,9 @@ dependencies {
     implementation(project(":hcs-gemini"))
     implementation(project(":hcs-gms-services"))
     implementation(project(":hcs-game-services"))
+    implementation(project(":hcs-navigation"))
+    implementation(project(":hcs-openai"))
+    implementation(project(":hcs-saf-provider"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

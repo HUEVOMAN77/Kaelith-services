@@ -257,6 +257,22 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "HCS Game Services: ${list.size} partidas guardadas localmente.", Toast.LENGTH_LONG).show()
         }
 
+        binding.btnTestNavigation.setOnClickListener {
+            val navEngine = com.hcs.navigation.HcsNavigationEngine(this)
+            val origin = org.hcs.maps.LatLng(19.4326, -99.1332)
+            val destination = org.hcs.maps.LatLng(19.4350, -99.1400)
+            val routeTask = navEngine.calculateRoute(origin, destination)
+            val route = Tasks.await(routeTask, 1, TimeUnit.SECONDS)
+            Toast.makeText(this, "Navegación HCS: Ruta calculada (${route.totalDistanceMeters}m).", Toast.LENGTH_LONG).show()
+        }
+
+        binding.btnTestOpenAi.setOnClickListener {
+            val openAiClient = com.hcs.openai.HcsOpenAiClient(this)
+            val responseTask = openAiClient.generateChatResponse("Hola ChatGPT")
+            val response = Tasks.await(responseTask, 1, TimeUnit.SECONDS)
+            Toast.makeText(this, response, Toast.LENGTH_LONG).show()
+        }
+
         binding.btnExportLog.setOnClickListener {
             val rawDiagnosticData = """
                 HCS Self-Check Export

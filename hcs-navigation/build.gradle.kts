@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.hcs.services"
+    namespace = "com.hcs.navigation"
     compileSdk = 34
 
     defaultConfig {
@@ -32,13 +32,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":hcs-api-compat"))
     implementation(project(":hcs-tasks"))
     implementation(project(":hcs-location"))
-    implementation(project(":hcs-push"))
-    implementation(project(":hcs-auth"))
-    implementation(project(":hcs-diagnostics"))
-    implementation(project(":hcs-game-services"))
+    implementation(project(":hcs-maps"))
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
 }
