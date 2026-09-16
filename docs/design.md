@@ -13,7 +13,13 @@ The main goal is to allow third-party applications (e.g. downloaded via Aurora S
 
 ---
 
-## 2. Architectural Principles & Non-Negotiable Rules
+## 2. Branding & Official Application Icon
+- **Official Identity**: Clean, modern vector emblem (`HCS`) featuring a tech shield and interconnected node matrix in electric blue & cyan gradients.
+- **Adaptive Launcher Format**: Implemented using Android API 26+ Adaptive Icon standards (`ic_launcher.xml` and `ic_launcher_round.xml` with decoupled foreground and background layers).
+
+---
+
+## 3. Architectural Principles & Non-Negotiable Rules
 
 1. **Non-Falsification Policy**:
    - HCS will **never** fake or spoof Google signatures, Play Integrity/SafetyNet attestations, DRM keys, payment tokens, licenses, or accounts.
@@ -35,7 +41,7 @@ The main goal is to allow third-party applications (e.g. downloaded via Aurora S
 
 ---
 
-## 3. Complete Module Hierarchy & Architecture
+## 4. Complete Module Hierarchy & Architecture
 
 ```
 hcs-core
@@ -60,23 +66,9 @@ hcs-core
 ├── hcs-distributor-installer # Automated UnifiedPush distributor installer & embedded manager
 ├── hcs-fido-biometrics       # EMUI BiometricPrompt integration for passkeys
 ├── hcs-offline-profiles      # Offline .hcsjson profile exporter & importer
-├── hcs-companion             # Companion GUI application & self-check UI dashboard
+├── hcs-companion             # Companion GUI application & self-check UI dashboard (with Official Adaptive Icon)
 └── hcs-test-suite            # Comprehensive instrumented and unit test suite
 ```
-
----
-
-## 4. Optional GMS Package Identity Bridge (`hcs-gms-bridge`)
-
-### 4.1 Purpose & Exclusivity
-- Exposes existing HCS core services (`hcs-tasks`, `hcs-location`, `hcs-push`, `hcs-auth`, `hcs-maps`, `hcs-fido`) under the `com.google.android.gms` package identity for apps like YouTube.
-- **microG Incompatibility Warning**: Only one package can claim `com.google.android.gms` at a time. The user must uninstall microG or GmsCore prior to enabling HCS GMS Bridge.
-- **No Code Duplication**: Routes incoming AIDL/service calls to existing HCS runtime modules.
-
-### 4.2 YouTube Feature Breakdown (Honest Reporting)
-- **Basic Playback & Search**: Level B (Functional via HCS Task/Location/Maps pipeline).
-- **Google Account Sync & Channel Subscriptions**: Level C (Uses open OAuth2/OpenID flows).
-- **Google Cast & 4K DRM Hardware Attestation**: Level D (Unimplementable without Google hardware attestation).
 
 ---
 

@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,20L84,32V58C84,75.2 71.2,90.8 54,96C36.8,90.8 24,75.2 24,58V32L54,20Z"
+        android:fillColor="#00B4D8"/>
+    <path
+        android:pathData="M54,26L78,36V58C78,71.5 67.8,83.8 54,88C40.2,83.8 30,71.5 30,58V36L54,26Z"
+        android:fillColor="#0077B6"/>
+    <!-- Stylized HCS Node Core -->
+    <path
+        android:pathData="M42,42V66M66,42V66M42,54H66"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M54,38A4,4 0 1,1 53.99,38M54,70A4,4 0 1,1 53.99,70"
+        android:fillColor="#90E0EF"/>
+</vector>
