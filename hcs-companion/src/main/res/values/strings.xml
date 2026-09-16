@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">HCS</string>
-    <string name="title_dashboard">HCS Dashboard &amp; Control Center</string>
+    <string name="title_dashboard">HCS Control Center &amp; Advanced Hub</string>
     <string name="subtitle_device_profile">Device &amp; System Profile</string>
     <string name="status_signature_spoofing">Signature Spoofing Status:</string>
     <string name="status_push_transport">Active Push Transport:</string>
@@ -13,6 +13,10 @@
     <string name="btn_check_updates">Check for Updates</string>
     <string name="title_privileged_module">Privileged / Root Mode (Optional)</string>
     <string name="btn_simulate_patch">Test Simulated System Patch</string>
+    <string name="title_advanced_tools">Advanced Compatibility Tools</string>
+    <string name="btn_run_benchmark">Run Performance Profiler</string>
+    <string name="btn_manage_distributors">Manage Push Distributors</string>
+    <string name="btn_export_offline_profile">Export Offline Profile</string>
     <string name="btn_export_log">Export Redacted Diagnostic Log</string>
     <string name="title_privacy_panel">Privacy &amp; Transparency</string>
     <string name="privacy_description">HCS never collects tokens, accounts, IMEIs, or personal logs. All exported diagnostics are redacted locally.</string>

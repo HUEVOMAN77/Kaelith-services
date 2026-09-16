@@ -38,64 +38,56 @@ The main goal is to allow third-party applications (e.g. downloaded via Aurora S
 
 ```
 hcs-core
-├── hcs-api-compat     # Compatible interfaces for common Android / GMS calls
-├── hcs-tasks          # Async tasks, callbacks, cancellation tokens (com.google.android.gms.tasks API compat)
-├── hcs-location       # Fused location provider (Android Location / HMS / Free provider)
-├── hcs-push           # UnifiedPush priority + FCM-compatible fallback + Huawei Push Kit
-├── hcs-auth           # Credential & auth wrappers without stored secrets (OAuth2/OpenID)
-├── hcs-maps           # Map provider interface (MapLibre / OpenStreetMap / Mapbox / VTM)
-├── hcs-webview        # System WebView detection & alternative check
-├── hcs-fido           # Credential Manager & WebAuthn wrappers
-├── hcs-diagnostics    # System inspection, signature spoofing check, redacted logging
-├── hcs-compat-db      # Community compatibility database client (anonymous read/report)
-├── hcs-update         # Self-updater (F-Droid style with SHA-256 & signature validation)
-├── hcs-telemetry      # Opt-in ACRA-style crash reporter without Google services
-├── hcs-emui           # Non-privileged EMUI adapters (battery, autostart, launch manager)
-├── hcs-privileged     # Optional root/ROM patch manager with backup, dry-run & 1-click rollback
-├── hcs-companion      # Companion GUI application & self-check UI dashboard
-└── hcs-test-suite     # Comprehensive instrumented and unit test suite
+├── hcs-api-compat            # Compatible interfaces for common Android / GMS calls
+├── hcs-tasks                 # Async tasks, callbacks, cancellation tokens (com.google.android.gms.tasks API compat)
+├── hcs-location              # Fused location provider (Android Location / HMS / Free provider)
+├── hcs-push                  # UnifiedPush priority + FCM-compatible fallback + Huawei Push Kit
+├── hcs-auth                  # Credential & auth wrappers without stored secrets (OAuth2/OpenID)
+├── hcs-maps                  # Map provider interface (MapLibre / OpenStreetMap / Mapbox / VTM)
+├── hcs-webview               # System WebView detection & alternative check
+├── hcs-fido                  # Credential Manager & WebAuthn wrappers
+├── hcs-diagnostics           # System inspection, signature spoofing check, redacted logging
+├── hcs-compat-db             # Community compatibility database client (anonymous read/report)
+├── hcs-update                # Self-updater (F-Droid style with SHA-256 & signature validation)
+├── hcs-telemetry             # Opt-in ACRA-style crash reporter without Google services
+├── hcs-emui                  # Non-privileged EMUI adapters (battery, autostart, launch manager)
+├── hcs-privileged            # Optional root/ROM patch manager with backup, dry-run & 1-click rollback
+├── hcs-proxy                 # Local micro-proxy for legacy Google URL pings
+├── hcs-benchmark             # Memory, CPU active time, and battery overhead profiler
+├── hcs-distributor-installer # Automated UnifiedPush distributor installer & embedded manager
+├── hcs-fido-biometrics       # EMUI BiometricPrompt integration for passkeys
+├── hcs-offline-profiles      # Offline .hcsjson profile exporter & importer
+├── hcs-companion             # Companion GUI application & self-check UI dashboard
+└── hcs-test-suite            # Comprehensive instrumented and unit test suite
 ```
 
 ---
 
-## 4. Full Phase Architecture & Implementation Details
+## 4. Advanced Innovation Modules Architecture
 
-### 4.1 Phase 1 & 2: Diagnostics, Tasks, Location & Push
-- **`hcs-emui` & `hcs-diagnostics`**: Device profiling, EMUI battery/autostart launchers, signature spoofing status check, and PII-redacted logging.
-- **`hcs-tasks`**: Clean-room implementation of `Task<T>`, `TaskCompletionSource<T>`, and `Tasks.await`.
-- **`hcs-location`**: `FusedLocationProviderClient` wrapping GPS/Network and HMS Location Kit.
-- **`hcs-push`**: Multi-transport push notification engine with **UnifiedPush** priority, FCM-compat adapter, and Huawei Push Kit fallback.
+### 4.1 Local Micro-Proxy (`hcs-proxy`)
+- Captures legacy Google endpoint pings (`android.googleapis.com`, `clients4.google.com/location`) from legacy Aurora Store apps.
+- Dispatches mock HTTP 200 OK responses or redirects location queries to HCS local providers to prevent app network hangs.
 
-### 4.2 Phase 3 & 4: Auth, FIDO, Maps & WebView
-- **`hcs-auth`**: Stateless OAuth2 / OpenID Connect authorization flows.
-- **`hcs-fido`**: FIDO2 / WebAuthn passkey management via Android Credential Manager.
-- **`hcs-maps`**: Abstracted `HcsMapProvider` supporting MapLibre, OpenStreetMap, Mapbox, and VTM.
-- **`hcs-webview`**: System WebView rendering engine inspector.
+### 4.2 Performance Profiler (`hcs-benchmark`)
+- Measures RAM footprint, active CPU execution time, and battery overhead of HCS components compared to native GMS baselines.
 
-### 4.3 Phase 5: Community DB, Updater & Telemetry (`hcs-compat-db`, `hcs-update`, `hcs-telemetry`)
-- **`hcs-compat-db`**: Anonymous querying and opt-in submission of app compatibility reports.
-- **`hcs-update`**: Cryptographically signed update index parser (`HcsUpdateManager`) verifying SHA-256 checksums and certificate fingerprints.
-- **`hcs-telemetry`**: Opt-in crash reporter (`HcsCrashReporter`) capturing anonymized stack traces without Google services.
+### 4.3 UnifiedPush Distributor Manager (`hcs-distributor-installer`)
+- Automatically detects installed UnifiedPush distributors (ntfy, Gotify) and offers 1-tap setup or embedded HCS push server fallback.
 
-### 4.4 Phase 6: Privileged Module (`hcs-privileged`)
-- **`hcs-privileged`**: `PrivilegedPatcher` providing safe system/root patch management with:
-  - Pre-patch SHA-256 hash verification.
-  - Full backup creation prior to any file modification.
-  - Dry-run / simulation mode.
-  - 1-click clean rollback and restoration.
-  - Bootloop protection guard.
+### 4.4 EMUI Biometric Passkey Engine (`hcs-fido-biometrics`)
+- Connects EMUI `BiometricPrompt` (fingerprint/face unlock) directly to FIDO2 / WebAuthn passkey assertion.
 
-### 4.5 Phase 7: Companion GUI & Governance (`hcs-companion`, `CONTRIBUTING.md`, `SECURITY.md`)
-- Complete unified dashboard UI featuring push status, map provider selection, app inspector with community DB lookup, update manager, privileged controls, and privacy panels.
-- Comprehensive governance guidelines (`CONTRIBUTING.md` & `SECURITY.md`).
+### 4.5 Offline Profile Exporter / Importer (`hcs-offline-profiles`)
+- Serializes and deserializes `.hcsjson` offline compatibility profiles for sharing across devices without internet access.
 
 ---
 
 ## 5. Non-Implementable APIs & Limitations (Honest Reporting)
 
 The following Google services are explicitly marked as **Unimplementable (`Level D`)** in standard unprivileged mode:
-1. **Google Play Integrity API & SafetyNet Attestation**: Requires Google server-side hardware attestation. Cannot be spoofed without violating safety & non-falsification rules.
+1. **Google Play Integrity API & SafetyNet Attestation**: Requires Google server-side hardware attestation.
 2. **Google Play In-App Billing & Subscriptions**: Requires Play Store client and Google Pay backend.
 3. **Google Wallet / Google Pay**: Requires proprietary Knox/TEE/SE secure element credentials and Google tokenization servers.
 4. **Widevine L1 DRM (Custom Keys)**: Fallback to Widevine L3 if supported by hardware; proprietary DRM keys cannot be forged.
-5. **Google Account Authentication via Proprietary Play Services**: Wrapped using standard OAuth2/OpenID where available, but proprietary GMS auth tokens cannot be synthesized.
+5. **Google Account Authentication via Proprietary Play Services**: Wrapped using standard OAuth2/OpenID where available.

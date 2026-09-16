@@ -3,17 +3,23 @@ package org.hcs.companion
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import org.hcs.benchmark.HcsPerformanceProfiler
 import org.hcs.companion.databinding.ActivityMainBinding
 import org.hcs.compatdb.HcsCompatDbClient
 import org.hcs.diagnostics.HcsAppInspector
 import org.hcs.diagnostics.RedactedLogExporter
+import org.hcs.distributorinstaller.UnifiedPushDistributorManager
 import org.hcs.emui.EmuiCompatibilityProfile
 import org.hcs.maps.MapEngineType
 import org.hcs.maps.MapManager
+import org.hcs.offlineprofiles.HcsProfileSerializer
+import org.hcs.offlineprofiles.OfflineProfile
 import org.hcs.privileged.PrivilegedPatcher
+import org.hcs.proxy.HcsLocalProxyServer
 import org.hcs.push.PushEngineManager
 import org.hcs.tasks.Tasks
 import org.hcs.update.HcsUpdateManager
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -27,6 +33,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var compatDbClient: HcsCompatDbClient
     private lateinit var updateManager: HcsUpdateManager
     private lateinit var privilegedPatcher: PrivilegedPatcher
+    private lateinit var proxyServer: HcsLocalProxyServer
+    private lateinit var profiler: HcsPerformanceProfiler
+    private lateinit var distributorManager: UnifiedPushDistributorManager
+    private lateinit var profileSerializer: HcsProfileSerializer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         compatDbClient = HcsCompatDbClient()
         updateManager = HcsUpdateManager()
         privilegedPatcher = PrivilegedPatcher(this)
+        proxyServer = HcsLocalProxyServer()
+        profiler = HcsPerformanceProfiler(this)
+        distributorManager = UnifiedPushDistributorManager(this)
+        profileSerializer = HcsProfileSerializer()
 
         setupSelfCheck()
         setupListeners()
@@ -87,6 +101,49 @@ class MainActivity : AppCompatActivity() {
                 }
             } else {
                 Toast.makeText(this, getString(R.string.msg_intent_failed), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.btnRunBenchmark.setOnClickListener {
+            val task = profiler.measureOverhead()
+            try {
+                val metrics = Tasks.await(task, 1, TimeUnit.SECONDS)
+                Toast.makeText(this, metrics.summaryReport, Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Benchmark failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.btnManageDistributors.setOnClickListener {
+            val task = distributorManager.getInstalledDistributors()
+            try {
+                val dists = Tasks.await(task, 1, TimeUnit.SECONDS)
+                val summary = dists.joinToString("\n") { "${it.name}: ${if (it.isInstalled) "Installed" else "Not installed"}" }
+                Toast.makeText(this, summary, Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Distributor query failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.btnExportOfflineProfile.setOnClickListener {
+            val profile = OfflineProfile(
+                packageName = "org.hcs.companion",
+                appName = "HCS Companion",
+                compatibilityLevel = "A",
+                preferredPushTransport = "UNIFIED_PUSH",
+                preferredMapEngine = "OPEN_STREET_MAP",
+                notes = "Exported from HCS Companion Dashboard"
+            )
+
+            val exportFile = File(filesDir, "hcs_companion.hcsjson")
+            val task = profileSerializer.exportProfileToFile(profile, exportFile)
+            try {
+                val success = Tasks.await(task, 1, TimeUnit.SECONDS)
+                if (success) {
+                    Toast.makeText(this, "Offline profile exported to: ${exportFile.absolutePath}", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Profile export failed", Toast.LENGTH_SHORT).show()
             }
         }
 

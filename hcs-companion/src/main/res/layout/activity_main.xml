@@ -107,6 +107,52 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Advanced Tools Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_advanced_tools"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnRunBenchmark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_run_benchmark"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnManageDistributors"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_manage_distributors"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnExportOfflineProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_export_offline_profile" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- App Inspector & Community DB Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
