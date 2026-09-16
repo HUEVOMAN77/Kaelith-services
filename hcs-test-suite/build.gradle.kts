@@ -30,6 +30,8 @@ dependencies {
     implementation(project(":hcs-privileged"))
     implementation(project(":hcs-privileged:hcs-gms-bridge"))
     implementation(project(":hcs-shizuku"))
+    implementation(project(":hcs-scan"))
+    implementation(project(":hcs-remoteconfig"))
 
     testImplementation(project(":hcs-emui"))
     testImplementation(project(":hcs-diagnostics"))
@@ -46,6 +48,8 @@ dependencies {
     testImplementation(project(":hcs-privileged"))
     testImplementation(project(":hcs-privileged:hcs-gms-bridge"))
     testImplementation(project(":hcs-shizuku"))
+    testImplementation(project(":hcs-scan"))
+    testImplementation(project(":hcs-remoteconfig"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.junit)

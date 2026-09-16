@@ -7,11 +7,15 @@ import org.junit.Test
 class MapsUnitTest {
 
     @Test
-    fun testOpenStreetMapTileUrl() {
+    fun testOpenStreetMapTileUrlAndMarker() {
         val provider = OpenStreetMapProvider()
-        val url = provider.renderMapTile(10.0, 20.0, 12f)
+        val pos = LatLng(10.0, 20.0)
+        val url = provider.renderMapTile(pos, 12f)
         assertTrue(url.contains("tile.openstreetmap.org"))
         assertEquals(MapEngineType.OPEN_STREET_MAP, provider.engineType)
+
+        val markerId = provider.addMarker(MarkerOptions(pos, "Test Marker"))
+        assertTrue(markerId.startsWith("osm_marker_"))
     }
 
     @Test

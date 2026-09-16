@@ -11,13 +11,19 @@ import org.hcs.fido.HcsFidoClient
 import org.hcs.fido.WebAuthnOption
 import org.hcs.gmsbridge.GmsServiceRouter
 import org.hcs.gmsbridge.MicroGConflictChecker
+import org.hcs.location.HcsGeofence
+import org.hcs.location.HcsGeofenceManager
 import org.hcs.location.HcsLocation
 import org.hcs.location.HcsLocationResult
+import org.hcs.maps.LatLng
 import org.hcs.maps.MapEngineType
 import org.hcs.maps.MapManager
+import org.hcs.maps.MarkerOptions
 import org.hcs.privileged.PrivilegedPatcher
 import org.hcs.push.PushEngineManager
 import org.hcs.push.PushTransportType
+import org.hcs.remoteconfig.HcsRemoteConfigClient
+import org.hcs.scan.HcsBarcodeScanner
 import org.hcs.shizuku.ShizukuAvailability
 import org.hcs.shizuku.ShizukuCommands
 import org.hcs.shizuku.ShizukuState
@@ -113,20 +119,34 @@ class HcsTestSuite {
     }
 
     @Test
-    fun testMapsAndWebViewIntegration() {
+    fun testEnhancedMapsAndGeofencingIntegration() {
         val mapManager = MapManager()
         val osmProvider = mapManager.getProvider(MapEngineType.OPEN_STREET_MAP)
-        val tileUrl = osmProvider.renderMapTile(12.0, 34.0, 15f)
+        val pos = LatLng(12.0, 34.0)
+        val tileUrl = osmProvider.renderMapTile(pos, 15f)
 
         assertTrue(tileUrl.contains("tile.openstreetmap.org"))
+        val markerId = osmProvider.addMarker(MarkerOptions(pos, "Test Marker"))
+        assertTrue(markerId.startsWith("osm_marker_"))
 
-        val webViewStatus = WebViewStatus(
-            packageName = "com.huawei.webview",
-            versionName = "12.0.0.300",
-            isMultiProcessEnabled = true,
-            isSufficientForHcs = true
-        )
-        assertTrue(webViewStatus.isSufficientForHcs)
+        val geofenceManager = HcsGeofenceManager(DummyContext())
+        val geofence = HcsGeofence("geo_1", 12.0, 34.0, 100f)
+        val addGeofenceTask = geofenceManager.addGeofences(listOf(geofence))
+        assertTrue(Tasks.await(addGeofenceTask, 1, TimeUnit.SECONDS))
+        assertEquals(1, geofenceManager.getActiveGeofences().size)
+    }
+
+    @Test
+    fun testScanAndRemoteConfigIntegration() {
+        val scanner = HcsBarcodeScanner(DummyContext())
+        val scanTask = scanner.scanFromBitmapData(byteArrayOf(1, 2, 3))
+        val scanResult = Tasks.await(scanTask, 1, TimeUnit.SECONDS)
+        assertTrue(scanResult.isSuccess)
+
+        val remoteConfig = HcsRemoteConfigClient(DummyContext())
+        val fetchTask = remoteConfig.fetchAndActivate()
+        assertTrue(Tasks.await(fetchTask, 1, TimeUnit.SECONDS))
+        assertEquals("Welcome to HCS (Huawei Compatibility Services)", remoteConfig.getString("hcs_welcome_message"))
     }
 
     @Test

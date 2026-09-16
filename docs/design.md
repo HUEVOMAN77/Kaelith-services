@@ -13,13 +13,7 @@ The main goal is to allow third-party applications (e.g. downloaded via Aurora S
 
 ---
 
-## 2. Branding & Official Application Icon
-- **Official Identity**: Clean, modern vector emblem (`HCS`) featuring a tech shield and interconnected node matrix in electric blue & cyan gradients.
-- **Adaptive Launcher Format**: Implemented using Android API 26+ Adaptive Icon standards (`ic_launcher.xml` and `ic_launcher_round.xml` with decoupled foreground and background layers).
-
----
-
-## 3. Architectural Principles & Non-Negotiable Rules
+## 2. Architectural Principles & Non-Negotiable Rules
 
 1. **Non-Falsification Policy**:
    - HCS will **never** fake or spoof Google signatures, Play Integrity/SafetyNet attestations, DRM keys, payment tokens, licenses, or accounts.
@@ -41,16 +35,16 @@ The main goal is to allow third-party applications (e.g. downloaded via Aurora S
 
 ---
 
-## 4. Complete Module Hierarchy & Architecture
+## 3. Complete Module Hierarchy & Architecture
 
 ```
 hcs-core
 ├── hcs-api-compat            # Compatible interfaces for common Android / GMS calls
 ├── hcs-tasks                 # Async tasks, callbacks, cancellation tokens (com.google.android.gms.tasks API compat)
-├── hcs-location              # Fused location provider (Android Location / HMS / Free provider)
+├── hcs-location              # Fused location provider + Geofencing (Android Location / HMS / Free provider)
 ├── hcs-push                  # UnifiedPush priority + FCM-compatible fallback + Huawei Push Kit
 ├── hcs-auth                  # Credential & auth wrappers without stored secrets (OAuth2/OpenID)
-├── hcs-maps                  # Map provider interface (MapLibre / OpenStreetMap / Mapbox / VTM)
+├── hcs-maps                  # Enhanced Map provider interface (LatLng, Marker, Polyline, Polygon, CameraPosition)
 ├── hcs-webview               # System WebView detection & alternative check
 ├── hcs-fido                  # Credential Manager & WebAuthn wrappers
 ├── hcs-diagnostics           # System inspection, signature spoofing check, redacted logging
@@ -66,9 +60,25 @@ hcs-core
 ├── hcs-distributor-installer # Automated UnifiedPush distributor installer & embedded manager
 ├── hcs-fido-biometrics       # EMUI BiometricPrompt integration for passkeys
 ├── hcs-offline-profiles      # Offline .hcsjson profile exporter & importer
-├── hcs-companion             # Companion GUI application & self-check UI dashboard (with Official Adaptive Icon)
+├── hcs-scan                  # Open 1D/2D Barcode & QR Code scanner
+├── hcs-remoteconfig          # Open REST/local JSON Remote Configuration client
+├── hcs-companion             # Companion GUI application & self-check UI dashboard
 └── hcs-test-suite            # Comprehensive instrumented and unit test suite
 ```
+
+---
+
+## 4. Extended Options & Contract Alignments
+
+### 4.1 Enhanced Maps & Geofencing (`hcs-maps`, `hcs-location`)
+- Enriched `hcs-maps` with `LatLng`, `MarkerOptions`, `PolylineOptions`, `PolygonOptions`, `CircleOptions`, and `CameraPosition` structs aligning with `common-mobile-services` and Google Maps v2 contracts.
+- Added `HcsGeofence` and `HcsGeofenceManager` in `hcs-location` for local boundary triggers.
+
+### 4.2 Barcode & QR Code Scanner (`hcs-scan`)
+- Open barcode/QR scanner (`HcsBarcodeScanner`) without proprietary Huawei MLKit or Google MLKit dependencies.
+
+### 4.3 Open Remote Configuration (`hcs-remoteconfig`)
+- `HcsRemoteConfigClient` providing local JSON default fallback and open HTTP REST fetch capabilities.
 
 ---
 

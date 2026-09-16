@@ -46,6 +46,7 @@ dependencies {
     implementation(project(":hcs-diagnostics"))
     implementation(project(":hcs-api-compat"))
     implementation(project(":hcs-tasks"))
+    implementation(project(":hcs-location"))
     implementation(project(":hcs-push"))
     implementation(project(":hcs-maps"))
     implementation(project(":hcs-compat-db"))
@@ -59,6 +60,8 @@ dependencies {
     implementation(project(":hcs-distributor-installer"))
     implementation(project(":hcs-fido-biometrics"))
     implementation(project(":hcs-offline-profiles"))
+    implementation(project(":hcs-scan"))
+    implementation(project(":hcs-remoteconfig"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
