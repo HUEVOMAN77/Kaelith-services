@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <service
+            android:name=".HcsLocationGmsService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter>
+                <action android:name="com.google.android.gms.location.internal.GoogleLocationManagerService.START" />
+                <action android:name="com.hcs.services.LOCATION" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".HcsPushGmsService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTER" />
+                <action android:name="com.hcs.services.PUSH" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".HcsAuthGmsService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.service.START" />
+                <action android:name="com.hcs.services.AUTH" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
