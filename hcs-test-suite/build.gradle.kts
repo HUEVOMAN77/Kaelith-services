@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":hcs-update"))
     implementation(project(":hcs-telemetry"))
     implementation(project(":hcs-privileged"))
+    implementation(project(":hcs-shizuku"))
 
     testImplementation(project(":hcs-emui"))
     testImplementation(project(":hcs-diagnostics"))
@@ -42,6 +43,7 @@ dependencies {
     testImplementation(project(":hcs-update"))
     testImplementation(project(":hcs-telemetry"))
     testImplementation(project(":hcs-privileged"))
+    testImplementation(project(":hcs-shizuku"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.junit)

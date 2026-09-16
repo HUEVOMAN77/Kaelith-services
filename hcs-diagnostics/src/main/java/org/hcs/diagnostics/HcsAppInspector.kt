@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import org.hcs.emui.EmuiCompatibilityProfile
 import org.hcs.emui.SignatureSpoofingStatus
+import org.hcs.shizuku.ShizukuCapability
+import org.hcs.shizuku.ShizukuCommands
 
 enum class CompatibilityLevel {
     A, // Fully compatible
@@ -42,10 +44,14 @@ data class AppInspectionResult(
     val detectedPermissions: List<String>,
     val compatibilityLevel: CompatibilityLevel,
     val primaryRootCause: FailureRootCause,
-    val summaryNotes: String
+    val summaryNotes: String,
+    val shizukuShellDetails: String? = null
 )
 
-class HcsAppInspector(private val context: Context) {
+class HcsAppInspector(
+    private val context: Context,
+    private val shizukuCapability: ShizukuCapability = ShizukuCommands()
+) {
 
     private val emuiProfile = EmuiCompatibilityProfile(context)
 
@@ -152,6 +158,12 @@ class HcsAppInspector(private val context: Context) {
             spoofingStatus = spoofingStatus
         )
 
+        val shizukuDetail = if (shizukuCapability.isShizukuPermissionGranted) {
+            "[Shizuku Shell Active] Querying extended package info for $packageName"
+        } else {
+            null
+        }
+
         return AppInspectionResult(
             packageName = packageName,
             appName = appName,
@@ -169,7 +181,8 @@ class HcsAppInspector(private val context: Context) {
             detectedPermissions = requestedPermissions,
             compatibilityLevel = level,
             primaryRootCause = cause,
-            summaryNotes = notes
+            summaryNotes = notes,
+            shizukuShellDetails = shizukuDetail
         )
     }
 
@@ -227,7 +240,8 @@ class HcsAppInspector(private val context: Context) {
             detectedPermissions = emptyList(),
             compatibilityLevel = CompatibilityLevel.E,
             primaryRootCause = FailureRootCause.NONE,
-            summaryNotes = reason
+            summaryNotes = reason,
+            shizukuShellDetails = null
         )
     }
 }

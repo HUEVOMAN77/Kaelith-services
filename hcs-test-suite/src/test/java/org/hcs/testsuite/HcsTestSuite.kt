@@ -16,6 +16,9 @@ import org.hcs.maps.MapManager
 import org.hcs.privileged.PrivilegedPatcher
 import org.hcs.push.PushEngineManager
 import org.hcs.push.PushTransportType
+import org.hcs.shizuku.ShizukuAvailability
+import org.hcs.shizuku.ShizukuCommands
+import org.hcs.shizuku.ShizukuState
 import org.hcs.tasks.TaskCompletionSource
 import org.hcs.tasks.Tasks
 import org.hcs.telemetry.HcsCrashReporter
@@ -162,6 +165,19 @@ class HcsTestSuite {
 
         assertTrue(result.isSuccess)
         assertTrue(result.isSimulation)
+    }
+
+    @Test
+    fun testShizukuExtraGracefulFallbackIntegration() {
+        val state = ShizukuAvailability.getShizukuState()
+        assertEquals(ShizukuState.NOT_INSTALLED_OR_RUNNING, state)
+
+        val commands = ShizukuCommands()
+        assertFalse(commands.isShizukuPermissionGranted)
+
+        val task = commands.getBatteryOptimizationDetail("com.aurorastore.targetapp")
+        val result = Tasks.await(task, 1, TimeUnit.SECONDS)
+        assertNotNull(result)
     }
 }
 

@@ -13,6 +13,8 @@
     <string name="btn_check_updates">Check for Updates</string>
     <string name="title_privileged_module">Privileged / Root Mode (Optional)</string>
     <string name="btn_simulate_patch">Test Simulated System Patch</string>
+    <string name="title_shizuku_module">Shizuku Shell Helper (Optional)</string>
+    <string name="btn_check_shizuku">Check / Authorize Shizuku</string>
     <string name="title_advanced_tools">Advanced Compatibility Tools</string>
     <string name="btn_run_benchmark">Run Performance Profiler</string>
     <string name="btn_manage_distributors">Manage Push Distributors</string>

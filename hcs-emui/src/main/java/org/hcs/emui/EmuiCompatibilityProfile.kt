@@ -5,11 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
-import java.io.File
 
-/**
- * Data class representing the device hardware, OS, EMUI profile, and HMS status.
- */
 data class DeviceProfile(
     val manufacturer: String,
     val model: String,
@@ -22,12 +18,10 @@ data class DeviceProfile(
     val hmsCoreVersionCode: Long,
     val hasPushAgent: Boolean,
     val displayLanguage: String,
-    val countryRegion: String
+    val countryRegion: String,
+    val isShizukuAvailable: Boolean = false
 )
 
-/**
- * Classifies the exact status of Signature Spoofing on the current device.
- */
 enum class SignatureSpoofingStatus {
     SUPPORTED_AND_GRANTED,
     SUPPORTED_BUT_NOT_GRANTED,
@@ -36,9 +30,6 @@ enum class SignatureSpoofingStatus {
     UNKNOWN_ERROR
 }
 
-/**
- * Inspection and helper utilities for Huawei EMUI environment detection and safe intent launching.
- */
 class EmuiCompatibilityProfile(private val context: Context) {
 
     companion object {
@@ -46,16 +37,12 @@ class EmuiCompatibilityProfile(private val context: Context) {
         const val HMS_CORE_PACKAGE = "com.huawei.hwid"
         const val HUAWEI_PUSH_AGENT_PACKAGE = "com.huawei.android.pushagent"
 
-        // EMUI Power/Startup Activities
         const val EMUI_AUTOSTART_ACTIVITY_1 = "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity"
         const val EMUI_AUTOSTART_ACTIVITY_2 = "com.huawei.systemmanager.optimize.bootcom.BootStartActivity"
         const val EMUI_BATTERY_GOVERNING_ACTIVITY = "com.huawei.systemmanager.power.ui.HwPowerManagerActivity"
         const val EMUI_PROTECTED_APPS_ACTIVITY = "com.huawei.systemmanager.optimize.process.ProtectActivity"
     }
 
-    /**
-     * Reads system build properties to accurately identify EMUI version without elevated permissions.
-     */
     fun getEmuiVersion(): String {
         return try {
             val systemPropertiesClass = Class.forName("android.os.SystemProperties")
@@ -67,10 +54,7 @@ class EmuiCompatibilityProfile(private val context: Context) {
         }
     }
 
-    /**
-     * Generates a full immutable DeviceProfile snapshot.
-     */
-    fun getDeviceProfile(): DeviceProfile {
+    fun getDeviceProfile(isShizukuActive: Boolean = false): DeviceProfile {
         val manufacturer = Build.MANUFACTURER ?: "UNKNOWN"
         val model = Build.MODEL ?: "UNKNOWN"
         val codeName = Build.DEVICE ?: "UNKNOWN"
@@ -110,13 +94,11 @@ class EmuiCompatibilityProfile(private val context: Context) {
             hmsCoreVersionCode = hmsVersionCode,
             hasPushAgent = pushAgentInstalled,
             displayLanguage = locale.language,
-            countryRegion = locale.country
+            countryRegion = locale.country,
+            isShizukuAvailable = isShizukuActive
         )
     }
 
-    /**
-     * Inspects actual Signature Spoofing state on the device without assuming system behavior.
-     */
     fun checkSignatureSpoofingStatus(): SignatureSpoofingStatus {
         return try {
             val pm = context.packageManager
@@ -125,7 +107,6 @@ class EmuiCompatibilityProfile(private val context: Context) {
                 return SignatureSpoofingStatus.SUPPORTED_AND_GRANTED
             }
 
-            // Check if permission is declared in system permission group / manifest
             val permInfo = try {
                 pm.getPermissionInfo(FAKE_SIGNATURE_PERMISSION, 0)
             } catch (e: PackageManager.NameNotFoundException) {
@@ -147,10 +128,6 @@ class EmuiCompatibilityProfile(private val context: Context) {
         }
     }
 
-    /**
-     * Resolves an Intent safely to open EMUI autostart / launch manager settings.
-     * Returns true if launched successfully or intent was found.
-     */
     fun createAutoStartIntent(): Intent? {
         val intents = listOf(
             Intent().setClassName("com.huawei.systemmanager", EMUI_AUTOSTART_ACTIVITY_1),
@@ -167,9 +144,6 @@ class EmuiCompatibilityProfile(private val context: Context) {
         return null
     }
 
-    /**
-     * Resolves an Intent safely to open EMUI battery management settings.
-     */
     fun createBatterySettingsIntent(): Intent {
         val pm = context.packageManager
         val emuiIntent = Intent().setClassName("com.huawei.systemmanager", EMUI_BATTERY_GOVERNING_ACTIVITY)
@@ -179,7 +153,6 @@ class EmuiCompatibilityProfile(private val context: Context) {
             return emuiIntent
         }
 
-        // Fallback to standard Android battery optimization settings
         return Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }

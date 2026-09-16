@@ -17,6 +17,9 @@ import org.hcs.offlineprofiles.OfflineProfile
 import org.hcs.privileged.PrivilegedPatcher
 import org.hcs.proxy.HcsLocalProxyServer
 import org.hcs.push.PushEngineManager
+import org.hcs.shizuku.ShizukuAvailability
+import org.hcs.shizuku.ShizukuCommands
+import org.hcs.shizuku.ShizukuPermissionFlow
 import org.hcs.tasks.Tasks
 import org.hcs.update.HcsUpdateManager
 import java.io.File
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var profiler: HcsPerformanceProfiler
     private lateinit var distributorManager: UnifiedPushDistributorManager
     private lateinit var profileSerializer: HcsProfileSerializer
+    private lateinit var shizukuCommands: ShizukuCommands
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,13 +59,16 @@ class MainActivity : AppCompatActivity() {
         profiler = HcsPerformanceProfiler(this)
         distributorManager = UnifiedPushDistributorManager(this)
         profileSerializer = HcsProfileSerializer()
+        shizukuCommands = ShizukuCommands()
 
         setupSelfCheck()
         setupListeners()
     }
 
     private fun setupSelfCheck() {
-        val device = emuiProfile.getDeviceProfile()
+        val shizukuState = ShizukuAvailability.getShizukuState()
+        val isShizukuActive = shizukuCommands.isShizukuPermissionGranted
+        val device = emuiProfile.getDeviceProfile(isShizukuActive)
         val spoofingStatus = emuiProfile.checkSignatureSpoofingStatus()
         val preferredPush = pushManager.getPreferredTransport()
         val defaultMapProvider = mapManager.getProvider(MapEngineType.OPEN_STREET_MAP)
@@ -72,7 +79,8 @@ class MainActivity : AppCompatActivity() {
             append("Android: ").append(device.androidVersion).append(" (SDK ").append(device.sdkInt).append(")\n")
             append("EMUI Version: ").append(device.emuiVersion).append("\n")
             append("HMS Core Installed: ").append(if (device.hasHmsCore) "Yes (v${device.hmsCoreVersionCode})" else "No").append("\n")
-            append("Push Agent Present: ").append(if (device.hasPushAgent) "Yes" else "No")
+            append("Push Agent Present: ").append(if (device.hasPushAgent) "Yes" else "No").append("\n")
+            append("Shizuku Status: ").append(shizukuState)
         }.toString()
 
         binding.tvDeviceInfo.text = infoText
@@ -102,6 +110,16 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, getString(R.string.msg_intent_failed), Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.btnCheckShizuku.setOnClickListener {
+            if (shizukuCommands.isShizukuAvailable) {
+                shizukuCommands.requestShizukuPermission(1001)
+                Toast.makeText(this, ShizukuPermissionFlow.EXPLANATION_TEXT_ES, Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Shizuku service is not running or not installed.", Toast.LENGTH_SHORT).show()
+            }
+            setupSelfCheck()
         }
 
         binding.btnRunBenchmark.setOnClickListener {

@@ -13,6 +13,8 @@
     <string name="btn_check_updates">Buscar Actualizaciones</string>
     <string name="title_privileged_module">Módulo Privilegiado / Root (Opcional)</string>
     <string name="btn_simulate_patch">Probar Parche de Sistema Simulado</string>
+    <string name="title_shizuku_module">Asistente Shell Shizuku (Opcional)</string>
+    <string name="btn_check_shizuku">Verificar / Autorizar Shizuku</string>
     <string name="title_advanced_tools">Herramientas Avanzadas de Compatibilidad</string>
     <string name="btn_run_benchmark">Ejecutar Perfilador de Rendimiento</string>
     <string name="btn_manage_distributors">Gestionar Distribuidores Push</string>

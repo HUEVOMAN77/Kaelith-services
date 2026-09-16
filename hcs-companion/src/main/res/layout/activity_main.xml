@@ -201,7 +201,7 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Updater & Privileged Module Card -->
+        <!-- Updater, Shizuku & Privileged Module Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -228,6 +228,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_check_updates"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_shizuku_module"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnCheckShizuku"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_check_shizuku"
                     android:layout_marginBottom="12dp" />
 
                 <TextView

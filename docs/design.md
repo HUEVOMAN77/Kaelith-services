@@ -18,10 +18,11 @@ The main goal is to allow third-party applications (e.g. downloaded via Aurora S
 1. **Non-Falsification Policy**:
    - HCS will **never** fake or spoof Google signatures, Play Integrity/SafetyNet attestations, DRM keys, payment tokens, licenses, or accounts.
    - If an API cannot be provided legitimately or via open standards, HCS reports an honest incompatibility level (`Level D`).
-2. **Three-Tier Operational Modes**:
+2. **Three-Tier Operational Modes + Optional Shizuku Helper**:
    - **Mode 1: Normal Unprivileged App** (`hcs-companion` & `hcs-core`) - Zero root or system privileges required. Uses standard Android APIs & EMUI public settings intents.
    - **Mode 2: Optional Root Module** (`hcs-privileged`) - Explicit user opt-in, non-destructive, with full backup and 1-click rollback.
    - **Mode 3: ROM / AOSP Package** - Integrated at system build time for custom ROM developers.
+   - **Optional Helper: Shizuku Shell Integration** (`hcs-shizuku`) - Non-root adb shell-level helper providing dumpsys diagnostics and battery whitelist management if user chooses to authorize Shizuku.
 3. **Privacy First & Zero Data Harvesting**:
    - No sensitive data collection (tokens, passwords, IMEI, phone numbers, Google accounts, or raw logs).
    - All exported logs and diagnostics are automatically redacted before saving or sharing.
@@ -52,6 +53,7 @@ hcs-core
 ├── hcs-telemetry             # Opt-in ACRA-style crash reporter without Google services
 ├── hcs-emui                  # Non-privileged EMUI adapters (battery, autostart, launch manager)
 ├── hcs-privileged            # Optional root/ROM patch manager with backup, dry-run & 1-click rollback
+├── hcs-shizuku               # Optional Shizuku shell-level helper (dumpsys diagnostics, battery whitelist)
 ├── hcs-proxy                 # Local micro-proxy for legacy Google URL pings
 ├── hcs-benchmark             # Memory, CPU active time, and battery overhead profiler
 ├── hcs-distributor-installer # Automated UnifiedPush distributor installer & embedded manager
@@ -63,23 +65,15 @@ hcs-core
 
 ---
 
-## 4. Advanced Innovation Modules Architecture
+## 4. Optional Shizuku Integration Architecture (`hcs-shizuku`)
 
-### 4.1 Local Micro-Proxy (`hcs-proxy`)
-- Captures legacy Google endpoint pings (`android.googleapis.com`, `clients4.google.com/location`) from legacy Aurora Store apps.
-- Dispatches mock HTTP 200 OK responses or redirects location queries to HCS local providers to prevent app network hangs.
-
-### 4.2 Performance Profiler (`hcs-benchmark`)
-- Measures RAM footprint, active CPU execution time, and battery overhead of HCS components compared to native GMS baselines.
-
-### 4.3 UnifiedPush Distributor Manager (`hcs-distributor-installer`)
-- Automatically detects installed UnifiedPush distributors (ntfy, Gotify) and offers 1-tap setup or embedded HCS push server fallback.
-
-### 4.4 EMUI Biometric Passkey Engine (`hcs-fido-biometrics`)
-- Connects EMUI `BiometricPrompt` (fingerprint/face unlock) directly to FIDO2 / WebAuthn passkey assertion.
-
-### 4.5 Offline Profile Exporter / Importer (`hcs-offline-profiles`)
-- Serializes and deserializes `.hcsjson` offline compatibility profiles for sharing across devices without internet access.
+Shizuku provides open-source `adb shell` privilege delegation without requiring root or bootloader unlocking.
+- **Boundaries**: Shizuku cannot modify system signatures, pass Play Integrity, or alter protected partitions.
+- **Graceful Degradation**: If Shizuku is uninstalled or unauthorized, HCS falls back 100% transparently to unprivileged standard Android/EMUI intents without throwing errors or breaking current behavior.
+- **Capabilities**:
+  1. Detailed dumpsys battery optimization and protected app state queries.
+  2. Battery optimization whitelist management (`dumpsys deviceidle whitelist`).
+  3. Expanded package inspection details in `HcsAppInspector`.
 
 ---
 

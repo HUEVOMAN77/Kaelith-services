@@ -52,6 +52,7 @@ dependencies {
     implementation(project(":hcs-update"))
     implementation(project(":hcs-telemetry"))
     implementation(project(":hcs-privileged"))
+    implementation(project(":hcs-shizuku"))
     implementation(project(":hcs-proxy"))
     implementation(project(":hcs-benchmark"))
     implementation(project(":hcs-distributor-installer"))

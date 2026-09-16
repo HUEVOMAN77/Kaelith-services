@@ -38,6 +38,7 @@ tasks.withType<Test> {
 dependencies {
     implementation(project(":hcs-emui"))
     implementation(project(":hcs-api-compat"))
+    implementation(project(":hcs-shizuku"))
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
 }
